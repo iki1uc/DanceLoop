@@ -3,721 +3,679 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚡ UNSTERBLICHKEITS-ENGINE · COIN · 6D · AIR · SCHACH</title>
+<title>💃 TANZ · SHUFFLE · DREH · RECALL</title>
 
 <style>
-  :root {
-    --bg: #0a0a12;
-    --fg: #0f0;
-    --axiom: #ffaa00;
-    --coin: #4af;
-    --schach: #f4f;
-    --masse: #4f4;
-    --air: #00ccff;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    background: var(--bg);
-    color: var(--fg);
-    font-family: 'Consolas', monospace;
-    padding: 20px;
-    min-height: 100vh;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    gap: 8px;
-  }
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  background: #0a0a0f;
+  color: #c8d0d0;
+  font-family: 'Consolas', 'Courier New', monospace;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  background: radial-gradient(ellipse at 50% 50%, #0a0a1a, #000000);
+}
+.container {
+  max-width: 1000px;
+  width: 100%;
+  background: rgba(10,10,20,0.3);
+  border: 1px solid rgba(255,170,0,0.03);
+  border-radius: 20px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 100px rgba(0,0,0,0.8);
+}
+.header {
+  text-align: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+  margin-bottom: 16px;
+}
+.header h1 {
+  font-size: 26px;
+  background: linear-gradient(90deg, #ff4444, #ffaa00, #00ff88, #00ccff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 4px;
+}
+.header .sub {
+  color: #445555;
+  font-size: 11px;
+  letter-spacing: 3px;
+}
+.header .sub .p1 { color: #ff4444; }
+.header .sub .p2 { color: #00ccff; }
+.header .sub .recall { color: #ffaa00; }
 
-  header {
-    border-bottom: 2px solid var(--axiom);
-    padding-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  header h1 {
-    font-size: 18px;
-    background: linear-gradient(90deg, var(--axiom), var(--coin), var(--schach), var(--air));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  header h1 .unsterblich { color: var(--masse); }
-  header h1 .genie { color: var(--air); }
+.canvas-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  aspect-ratio: 16/9;
+  background: rgba(0,0,0,0.4);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.02);
+  overflow: hidden;
+}
+#tanzCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 
-  #status-led {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #333;
-    transition: 0.3s;
-  }
-  #status-led.on { background: #0f0; box-shadow: 0 0 20px #0f0; }
-  #status-led.off { background: #f00; }
-  #status-led.busy { background: #ff0; animation: blink 0.5s infinite; }
-  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+.key-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+@media (max-width:600px){ .key-grid { grid-template-columns:1fr; } }
+.key-panel {
+  background: rgba(10,10,20,0.2);
+  border: 1px solid rgba(255,255,255,0.02);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+.key-panel .title {
+  font-size: 11px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+.key-panel .title.p1 { color: #ff4444; }
+.key-panel .title.p2 { color: #00ccff; }
+.key-row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin: 2px 0;
+}
+.key-btn {
+  background: rgba(20,35,35,0.2);
+  color: #668888;
+  border: 1px solid rgba(255,255,255,0.02);
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  transition: all 0.15s;
+  min-width: 32px;
+  text-align: center;
+}
+.key-btn:hover { background: rgba(40,80,70,0.08); color: #aaeedd; }
+.key-btn.active-p1 {
+  background: #ff444455;
+  border-color: #ff4444aa;
+  color: #ff4444;
+  box-shadow: 0 0 30px rgba(255,68,68,0.15);
+  animation: pulseP1 0.3s ease;
+}
+.key-btn.active-p2 {
+  background: #00ccff55;
+  border-color: #00ccffaa;
+  color: #00ccff;
+  box-shadow: 0 0 30px rgba(0,204,255,0.15);
+  animation: pulseP2 0.3s ease;
+}
+@keyframes pulseP1 {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); background: #ff444477; }
+  100% { transform: scale(1); }
+}
+@keyframes pulseP2 {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); background: #00ccff77; }
+  100% { transform: scale(1); }
+}
+.key-btn.p1 { color: #ff4444; border-color: rgba(255,68,68,0.1); }
+.key-btn.p2 { color: #00ccff; border-color: rgba(0,204,255,0.1); }
 
-  main {
-    display: grid;
-    grid-template-columns: 3fr 2fr;
-    gap: 8px;
-    min-height: 500px;
-  }
-  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.info-card {
+  background: rgba(10,10,20,0.2);
+  border: 1px solid rgba(255,255,255,0.02);
+  border-radius: 8px;
+  padding: 6px 8px;
+  text-align: center;
+  font-size: 9px;
+}
+.info-card .value {
+  font-size: 18px;
+  font-weight: bold;
+  font-family: monospace;
+}
+.info-card .label {
+  color: #445555;
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.info-card.recall .value { color: #ffaa00; }
 
-  .panel {
-    background: #05050a;
-    border: 1px solid #1a1a2a;
-    border-radius: 8px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-  }
-  .panel .header {
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 4px;
-    border-bottom: 1px solid #1a1a2a;
-  }
-  .panel .header h3 { font-size: 12px; }
-  .panel .header span { font-size: 10px; color: #666; }
+.controls {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+}
+.controls button {
+  background: rgba(20,35,35,0.2);
+  color: #668888;
+  border: 1px solid rgba(255,255,255,0.02);
+  padding: 5px 16px;
+  border-radius: 18px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 9px;
+  transition: all 0.3s;
+}
+.controls button:hover { background: rgba(40,80,70,0.08); color: #aaeedd; }
+.controls button.active { background: rgba(40,80,70,0.06); color: #00ff88; }
+.controls button.recall { border-color: #ffaa0066; color: #ffaa00; }
+.controls button.recall:hover { background: #ffaa0022; }
 
-  .matrix9 {
-    display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    gap: 2px;
-    margin-top: 10px;
-  }
-  .cell9 {
-    background: #0a0a12;
-    border: 1px solid #1a1a2a;
-    padding: 4px 2px;
-    text-align: center;
-    font-size: 8px;
-    color: #6a8a8a;
-    border-radius: 3px;
-    transition: all 0.3s;
-  }
-  .cell9:hover { border-color: var(--axiom); }
-  .cell9 .axiom { color: var(--axiom); font-weight: bold; }
-  .cell9 .wert { color: var(--masse); }
-
-  .axiom-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 4px;
-    margin-top: 10px;
-  }
-  .axiom-item {
-    background: #0a0a12;
-    border: 1px solid #1a1a2a;
-    padding: 6px 8px;
-    border-radius: 4px;
-    text-align: center;
-    font-size: 10px;
-  }
-  .axiom-item .name { color: var(--axiom); font-weight: bold; }
-  .axiom-item .value { color: var(--masse); }
-  .axiom-item .role { color: #666; font-size: 8px; }
-
-  .figure-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 4px;
-    margin-top: 10px;
-  }
-  .figure-item {
-    background: #0a0a12;
-    border: 1px solid #1a1a2a;
-    padding: 6px 8px;
-    border-radius: 4px;
-    text-align: center;
-    font-size: 10px;
-  }
-  .figure-item .fig { font-size: 18px; }
-  .figure-item .name { color: var(--schach); }
-  .figure-item .wert { color: var(--masse); }
-
-  .air-axis {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 4px;
-    margin-top: 10px;
-  }
-  .air-item {
-    background: #0a0a12;
-    border: 1px solid #1a1a2a;
-    padding: 6px 8px;
-    border-radius: 4px;
-    text-align: center;
-    font-size: 10px;
-  }
-  .air-item .name { color: var(--air); font-weight: bold; }
-  .air-item .value { color: var(--masse); }
-
-  #log {
-    flex: 1;
-    overflow-y: auto;
-    font-size: 8px;
-    color: #6a6a8a;
-    line-height: 1.3;
-    min-height: 60px;
-    max-height: 120px;
-    background: #06060a;
-    border-radius: 4px;
-    padding: 4px 6px;
-    margin-top: 10px;
-  }
-  #log .entry { padding: 1px 0; border-bottom: 1px solid #0a0a12; }
-  #log .time { color: #444; }
-  #log .msg.ok { color: #4f4; }
-  #log .msg.warn { color: #ff4; }
-  #log .msg.axiom { color: var(--axiom); }
-  #log .msg.schach { color: var(--schach); }
-  #log .msg.coin { color: var(--coin); }
-  #log .msg.air { color: var(--air); }
-  #log .msg.unsterblich { color: var(--masse); }
-
-  #score-display {
-    background: #0a0a12;
-    border: 1px solid #1a1a2a;
-    border-radius: 4px;
-    padding: 8px;
-    margin-top: 10px;
-    font-size: 11px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    gap: 4px;
-  }
-  .score-item {
-    text-align: center;
-    padding: 4px;
-    border-radius: 3px;
-    background: #0e0e1a;
-  }
-  .score-item .label { font-size: 7px; color: #666; text-transform: uppercase; }
-  .score-item .value { font-size: 14px; font-weight: bold; }
-  .score-item.coin .value { color: var(--coin); }
-  .score-item.schach .value { color: var(--schach); }
-  .score-item.masse .value { color: var(--masse); }
-  .score-item.air .value { color: var(--air); }
-
-  button {
-    background: #111;
-    color: var(--fg);
-    border: 1px solid #333;
-    padding: 4px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 9px;
-    transition: 0.2s;
-  }
-  button:hover { background: #1a1a2a; border-color: var(--fg); }
-  button.primary { border-color: var(--axiom); color: var(--axiom); }
-  button.primary:hover { background: var(--axiom); color: #000; }
-  button.schach { border-color: var(--schach); color: var(--schach); }
-  button.schach:hover { background: var(--schach); color: #000; }
-  button.coin { border-color: var(--coin); color: var(--coin); }
-  button.coin:hover { background: var(--coin); color: #000; }
-  button.masse { border-color: var(--masse); color: var(--masse); }
-  button.masse:hover { background: var(--masse); color: #000; }
-  button.air { border-color: var(--air); color: var(--air); }
-  button.air:hover { background: var(--air); color: #000; }
-
-  .controls {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    padding: 4px 0;
-  }
-
-  #canvas-wrap {
-    flex: 1;
-    background: #000;
-    border-radius: 4px;
-    overflow: hidden;
-    min-height: 200px;
-    position: relative;
-    margin-top: 10px;
-  }
-  #canvas-wrap canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 12px;
+  margin-top: 8px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  font-size: 8px;
+  color: #445555;
+  border: 1px solid rgba(255,255,255,0.01);
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.footer {
+  text-align: center;
+  margin-top: 8px;
+  color: #222;
+  font-size: 8px;
+  letter-spacing: 2px;
+}
+.footer span { color: #ffaa00; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>⚡ <span class="unsterblich">UNSTERBLICH</span> · COIN · 6D · AIR · <span class="genie">SCHACH</span></h1>
-  <div style="display:flex;align-items:center;gap:10px;">
-    <span id="status-led" class="off"></span>
-    <span id="clock" style="font-size:11px;color:#666;">⏱️ --:--:--</span>
-    <span id="cycle-count" style="font-size:10px;color:#444;">Zug 0</span>
+<div class="container">
+
+<div class="header">
+  <h1>💃 TANZ · SHUFFLE · DREH · RECALL</h1>
+  <div class="sub"><span class="p1">🔴 P1 1-9</span> vs <span class="p2">🔵 P2 QWEAZDYXC</span> · <span class="recall">⏪ RECALL</span></div>
+</div>
+
+<div class="canvas-wrap">
+  <canvas id="tanzCanvas"></canvas>
+</div>
+
+<div class="key-grid">
+  <div class="key-panel">
+    <div class="title p1">🔴 SPIELER 1 · 1-9</div>
+    <div class="key-row"><span class="key-btn p1" data-key="1">1</span><span class="key-btn p1" data-key="2">2</span><span class="key-btn p1" data-key="3">3</span></div>
+    <div class="key-row"><span class="key-btn p1" data-key="4">4</span><span class="key-btn p1" data-key="5">5</span><span class="key-btn p1" data-key="6">6</span></div>
+    <div class="key-row"><span class="key-btn p1" data-key="7">7</span><span class="key-btn p1" data-key="8">8</span><span class="key-btn p1" data-key="9">9</span></div>
   </div>
-</header>
-
-<main>
-  <!-- CANVAS / MATRIX -->
-  <div class="panel">
-    <div class="header">
-      <h3 style="color:var(--coin);">🪙 COIN · 9×9 Matrix · 6D AIR</h3>
-      <span id="stats">Axiome: 6 | Figuren: 6 | AIR: 3</span>
-    </div>
-
-    <div id="canvas-wrap">
-      <canvas id="simCanvas"></canvas>
-    </div>
-
-    <div style="margin-top:10px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
-      <div>
-        <div style="font-size:9px;color:#666;margin-bottom:4px;">⚛️ Axiome</div>
-        <div class="axiom-list" id="axiomList"></div>
-      </div>
-      <div>
-        <div style="font-size:9px;color:#666;margin-bottom:4px;">♟️ Figuren</div>
-        <div class="figure-grid" id="figureGrid"></div>
-      </div>
-      <div>
-        <div style="font-size:9px;color:#666;margin-bottom:4px;">🌬️ AIR-Achsen</div>
-        <div class="air-axis" id="airAxis"></div>
-      </div>
-    </div>
-
-    <div id="score-display">
-      <div class="score-item coin"><div class="label">COIN</div><div class="value" id="coinScore">0</div></div>
-      <div class="score-item schach"><div class="label">SCHACH</div><div class="value" id="schachScore">0</div></div>
-      <div class="score-item masse"><div class="label">MASSE</div><div class="value" id="masseScore">0</div></div>
-      <div class="score-item air"><div class="label">AIR</div><div class="value" id="airScore">0</div></div>
-      <div class="score-item"><div class="label">ZUG</div><div class="value" id="zugCount">0</div></div>
-    </div>
-
-    <div id="log">
-      <div class="entry"><span class="time">[INIT]</span> <span class="msg unsterblich">⚡ UNSTERBLICHKEITS-ENGINE · geladen</span></div>
-      <div class="entry"><span class="time">[INIT]</span> <span class="msg axiom">⚛️ 6 Axiome: T, X, Y, C, KI, E</span></div>
-      <div class="entry"><span class="time">[INIT]</span> <span class="msg schach">♟️ 6 Figuren: Bauer, Pferd, Läufer, Turm, Dame, König</span></div>
-      <div class="entry"><span class="time">[INIT]</span> <span class="msg air">🌬️ 3 AIR-Achsen: AIR_rITZ, AIV_WITZ, AIR_Flow</span></div>
-    </div>
+  <div class="key-panel">
+    <div class="title p2">🔵 SPIELER 2 · QWEAZDYXC</div>
+    <div class="key-row"><span class="key-btn p2" data-key="q">Q</span><span class="key-btn p2" data-key="w">W</span><span class="key-btn p2" data-key="e">E</span></div>
+    <div class="key-row"><span class="key-btn p2" data-key="a">A</span><span class="key-btn p2" data-key="z">Z</span><span class="key-btn p2" data-key="d">D</span></div>
+    <div class="key-row"><span class="key-btn p2" data-key="y">Y</span><span class="key-btn p2" data-key="x">X</span><span class="key-btn p2" data-key="c">C</span></div>
   </div>
+</div>
 
-  <!-- DATA PANEL -->
-  <div class="panel">
-    <div class="header">
-      <h3 style="color:var(--air);">🌬️ AIRCHESS · 6D · UNLINEAR</h3>
-      <span id="engine-status">● bereit</span>
-    </div>
+<div class="info-grid">
+  <div class="info-card"><div class="value" id="p1Score" style="color:#ff4444;">0</div><div class="label">🔴 SPIELER 1</div></div>
+  <div class="info-card"><div class="value" id="moveDisplay" style="color:#ffaa00;">—</div><div class="label">🎯 MOVE</div></div>
+  <div class="info-card"><div class="value" id="p2Score" style="color:#00ccff;">0</div><div class="label">🔵 SPIELER 2</div></div>
+  <div class="info-card recall"><div class="value" id="recallCount">0</div><div class="label">⏪ RECALLS</div></div>
+</div>
 
-    <div style="margin-top:10px;">
-      <div style="font-size:9px;color:#666;margin-bottom:4px;">📊 ZUG-WERTE</div>
-      <pre id="zugWerte" style="background:#0a0a12;padding:6px;border-radius:4px;font-size:8px;color:#8af;white-space:pre-wrap;min-height:60px;"></pre>
-    </div>
+<div class="controls">
+  <button class="active" id="btnStart">▶ START</button>
+  <button id="btnMove">🎯 MOVE</button>
+  <button id="btnShuffle">🔀 SHUFFLE</button>
+  <button id="btnSpin">🔄 DREH</button>
+  <button class="recall" id="btnRecall">⏪ RECALL</button>
+  <button id="btnProof">🔮 PROOF</button>
+  <button id="btnReset">⟲ RESET</button>
+</div>
 
-    <div style="margin-top:10px;">
-      <div style="font-size:9px;color:#666;margin-bottom:4px;">📐 SLIDE · WETTE · UNSTERBLICH</div>
-      <pre id="unsterblich" style="background:#0a0a12;padding:6px;border-radius:4px;font-size:8px;color:#4f4;white-space:pre-wrap;min-height:40px;"></pre>
-    </div>
+<div class="status-bar">
+  <span>💃 STATUS: <span id="statusText">tanzt</span></span>
+  <span>🎯 MOVE: <span id="moveStatus">—</span></span>
+  <span>🔄 DREH: <span id="spinStatus">0°</span></span>
+  <span>⏪ RECALL: <span id="recallStatus">bereit</span></span>
+</div>
 
-    <div class="controls">
-      <button class="primary" id="btnBoot">▶ BOOT</button>
-      <button class="schach" id="btnZug">♟️ ZUG</button>
-      <button class="coin" id="btnScore">🪙 SCORE</button>
-      <button class="masse" id="btnMasse">⚖️ MASSE</button>
-      <button class="air" id="btnAir">🌬️ AIR</button>
-      <button id="btnReset">⟲ RESET</button>
-      <button id="btnAuto">▶ AUTO</button>
-      <button class="masse" id="btnUnsterblich">⚡ UNSTERBLICH</button>
-    </div>
-  </div>
-</main>
+<div class="footer">
+  <span>💃</span> SHUFFLE · DREH · RECALL · <span>wieimmer4u</span>
+</div>
+
+</div>
 
 <script>
 // ============================================================
-// UNSTERBLICHKEITS-ENGINE · COIN · 6D · AIR · SCHACH
+// TANZ · SHUFFLE · DREH · RECALL – MIT ZEITSPRUNG
 // ============================================================
 
-// ─── AXIOME ──────────────────────────────────────────────────
-const AXIOME = {
-  T: { name: 'T-Axiom', role: 'Träger / Halt', value: 1, color: '#ff6b6b' },
-  X: { name: 'X-Axiom', role: 'Kreuzpunkt / Verbindung', value: 2, color: '#ffd93d' },
-  Y: { name: 'Y-Axiom', role: 'Fächer / Richtung', value: 4, color: '#6b6bff' },
-  C: { name: 'C-Axiom', role: 'Konstellation / Mitte', value: 8, color: '#ff44ff' },
-  KI: { name: 'KI-Axiom', role: 'Intelligenz / Muster', value: 16, color: '#4ff' },
-  E: { name: 'E-Axiom', role: 'Energie / Orbit', value: 32, color: '#ffaa00' }
-};
-
-// ─── FIGUREN ──────────────────────────────────────────────────
-const FIGUREN = {
-  Bauer: { symbol: '♟', axiom: 'T', wert: 1 },
-  Pferd: { symbol: '♞', axiom: 'X', wert: 4 },
-  Läufer: { symbol: '♝', axiom: 'Y', wert: 9 },
-  Turm: { symbol: '♜', axiom: 'C', wert: 16 },
-  Dame: { symbol: '♛', axiom: 'KI', wert: 25 },
-  König: { symbol: '♚', axiom: 'E', wert: 36 }
-};
-
-// ─── AIR-ACHSEN ──────────────────────────────────────────────
-const AIR_AXEN = {
-  AIR_rITZ: { name: 'AIR_rITZ', role: 'MAX Aufstieg', value: 0 },
-  AIV_WITZ: { name: 'AIV_WITZ', role: 'MIN Abstieg', value: 0 },
-  AIR_Flow: { name: 'AIR_Flow', role: 'Flow-Mitte', value: 0 }
-};
-
-// ─── ZÜGE ────────────────────────────────────────────────────
-const ZUEGE = {
-  Schäferzug: { axiom: 'KI', wert: 25, faktor: 4, ergebnis: 100 },
-  Doppelangriff: { axiom: 'Y', wert: 9, faktor: 3, ergebnis: 27 },
-  Opferzug: { axiom: 'C', wert: 16, faktor: 3, ergebnis: 48 },
-  KO_Schlag: { axiom: 'E', wert: 36, faktor: 4, ergebnis: 144 },
-  AIR_Stoß: { axiom: 'T', wert: 1, faktor: 8, ergebnis: 8 }
-};
-
-// ─── STATE ───────────────────────────────────────────────────
-const state = {
-  zug: 0,
-  coinScore: 0,
-  schachScore: 0,
-  masseScore: 0,
-  airScore: 0,
-  unsterblichScore: 0,
-  running: false,
-  autoMode: false,
-  matrix: [],
-  history: [],
-  air: { ...AIR_AXEN }
-};
-
-// ─── CANVAS ──────────────────────────────────────────────────
-const canvas = document.getElementById('simCanvas');
+const canvas = document.getElementById('tanzCanvas');
 const ctx = canvas.getContext('2d');
+let running = true;
+let time = 0;
+let p1Score = 0, p2Score = 0;
+let currentMove = '—';
+let frame = 0;
+let spinAngle = 0;
+let shuffleMode = false;
+let spinSpeed = 0;
+let recallCount = 0;
+
+// ===== RECALL-SPEICHER =====
+let history = [];
+const MAX_HISTORY = 50;
+
+function saveState() {
+  history.push({
+    p1: { pose: p1.pose, rot: p1.rot, x: p1.x, y: p1.y },
+    p2: { pose: p2.pose, rot: p2.rot, x: p2.x, y: p2.y },
+    p1Score, p2Score,
+    currentMove,
+    spinAngle,
+    shuffleMode,
+    spinSpeed,
+    time: Date.now()
+  });
+  if (history.length > MAX_HISTORY) history.shift();
+}
+
+function recallState() {
+  if (history.length === 0) {
+    document.getElementById('recallStatus').textContent = '❌ kein Recall';
+    return false;
+  }
+  const last = history.pop();
+  p1.pose = last.p1.pose;
+  p1.rot = last.p1.rot;
+  p1.x = last.p1.x;
+  p1.y = last.p1.y;
+  p2.pose = last.p2.pose;
+  p2.rot = last.p2.rot;
+  p2.x = last.p2.x;
+  p2.y = last.p2.y;
+  p1Score = last.p1Score;
+  p2Score = last.p2Score;
+  currentMove = last.currentMove;
+  spinAngle = last.spinAngle;
+  shuffleMode = last.shuffleMode;
+  spinSpeed = last.spinSpeed;
+  recallCount++;
+  document.getElementById('recallCount').textContent = recallCount;
+  document.getElementById('recallStatus').textContent = `⏪ ${recallCount}`;
+  updateUI();
+  return true;
+}
 
 function resizeCanvas() {
-  const wrap = canvas.parentElement;
-  canvas.width = wrap.clientWidth || 500;
-  canvas.height = wrap.clientHeight || 200;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width || 700;
+  canvas.height = rect.height || (rect.width * 9/16) || 390;
 }
-resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-// ─── DOM ─────────────────────────────────────────────────────
-const logDiv = document.getElementById('log');
+// ===== POSEN =====
+const POSES = {
+  '1': { armL: -0.6, armR: -0.4, legL: -0.3, legR: -0.1, body: 0, head: 0, label: 'Step L' },
+  '2': { armL: -0.4, armR: -0.6, legL: -0.1, legR: -0.3, body: 0.05, head: 0.05, label: 'Step R' },
+  '3': { armL: -0.8, armR: 0.3, legL: -0.4, legR: 0.1, body: 0.1, head: 0.1, label: 'Arm L' },
+  '4': { armL: 0.3, armR: -0.8, legL: 0.1, legR: -0.4, body: 0.15, head: 0.15, label: 'Arm R' },
+  '5': { armL: 0.6, armR: 0.6, legL: 0, legR: 0, body: 0.2, head: 0.2, label: 'Jump' },
+  '6': { armL: -0.9, armR: 0.9, legL: -0.3, legR: 0.3, body: 0.25, head: 0.25, label: 'Spread' },
+  '7': { armL: 0, armR: 0, legL: -0.6, legR: 0.6, body: 0.3, head: 0.3, label: 'Split' },
+  '8': { armL: 0.5, armR: -0.5, legL: -0.3, legR: -0.3, body: 0.35, head: 0.35, label: 'Twist' },
+  '9': { armL: -0.3, armR: 0.3, legL: 0.3, legR: -0.3, body: 0.4, head: 0.4, label: 'Spin' },
+  'q': { armL: -0.5, armR: -0.5, legL: -0.2, legR: -0.2, body: 0.02, head: 0.02, label: 'Sway L' },
+  'w': { armL: 0.5, armR: 0.5, legL: 0.2, legR: 0.2, body: 0.08, head: 0.08, label: 'Sway R' },
+  'e': { armL: -0.7, armR: 0.15, legL: -0.35, legR: 0.05, body: 0.12, head: 0.12, label: 'Wave L' },
+  'a': { armL: 0.15, armR: -0.7, legL: 0.05, legR: -0.35, body: 0.18, head: 0.18, label: 'Wave R' },
+  'z': { armL: 0.7, armR: -0.3, legL: 0.15, legR: -0.15, body: 0.22, head: 0.22, label: 'Power' },
+  'd': { armL: -0.3, armR: 0.7, legL: -0.15, legR: 0.15, body: 0.28, head: 0.28, label: 'Grace' },
+  'y': { armL: 0.3, armR: 0.3, legL: -0.4, legR: 0.4, body: 0.32, head: 0.32, label: 'Float' },
+  'x': { armL: -0.6, armR: -0.6, legL: 0.4, legR: -0.4, body: 0.38, head: 0.38, label: 'Cross' },
+  'c': { armL: 0, armR: 0, legL: 0, legR: 0, body: 0, head: 0, label: 'Center' }
+};
 
-function log(msg, type = 'info') {
-  const entry = document.createElement('div');
-  entry.className = 'entry';
-  const time = new Date().toLocaleTimeString();
-  const cls = type === 'ok' ? 'ok' : type === 'warn' ? 'warn' :
-              type === 'axiom' ? 'axiom' : type === 'schach' ? 'schach' :
-              type === 'coin' ? 'coin' : type === 'air' ? 'air' :
-              type === 'unsterblich' ? 'unsterblich' : '';
-  entry.innerHTML = `<span class="time">[${time}]</span> <span class="msg ${cls}">${msg}</span>`;
-  logDiv.appendChild(entry);
-  logDiv.scrollTop = logDiv.scrollHeight;
-  while (logDiv.children.length > 50) logDiv.removeChild(logDiv.firstChild);
+let p1 = { x: 0.28, y: 0.55, pose: '5', color: '#ff4444', label: 'P1', rot: 0 };
+let p2 = { x: 0.72, y: 0.55, pose: 'c', color: '#00ccff', label: 'P2', rot: 0 };
+
+function drawStickman(ctx, x, y, pose, color, label, scale, alpha, rot) {
+  const p = POSES[pose] || POSES['5'];
+  const s = scale * 1.8;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(rot + p.body * 0.2);
+  ctx.globalAlpha = alpha || 1;
+
+  ctx.shadowColor = color + '55';
+  ctx.shadowBlur = 25;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 4;
+  ctx.shadowBlur = 15;
+  ctx.beginPath();
+  ctx.arc(0, -s * 1.1 + p.head * 0.3 * s, s * 0.2, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.shadowBlur = 10;
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(0, -s * 0.85 + p.body * 0.3 * s);
+  ctx.lineTo(0, s * 0.25 + p.body * 0.3 * s);
+  ctx.stroke();
+
+  ctx.lineWidth = 4.5;
+  ctx.beginPath();
+  ctx.moveTo(0, -s * 0.65 + p.body * 0.3 * s);
+  ctx.lineTo(-s * 0.45 + p.armL * 0.5 * s, -s * 0.15 + p.body * 0.3 * s);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(0, -s * 0.65 + p.body * 0.3 * s);
+  ctx.lineTo(s * 0.45 + p.armR * 0.5 * s, -s * 0.15 + p.body * 0.3 * s);
+  ctx.stroke();
+
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(0, s * 0.25 + p.body * 0.3 * s);
+  ctx.lineTo(-s * 0.3 + p.legL * 0.6 * s, s * 0.7 + p.legL * 0.6 * s);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(0, s * 0.25 + p.body * 0.3 * s);
+  ctx.lineTo(s * 0.3 + p.legR * 0.6 * s, s * 0.7 + p.legR * 0.6 * s);
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 0.6;
+  ctx.fillStyle = color;
+  ctx.font = '10px monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText(label, 0, -s * 1.5);
+
+  ctx.globalAlpha = 0.3;
+  ctx.font = '7px monospace';
+  ctx.textBaseline = 'top';
+  ctx.fillText(p.label || pose, 0, s * 1.0);
+  ctx.restore();
 }
 
-// ─── MATRIX ──────────────────────────────────────────────────
-function buildMatrix() {
-  const matrix = [];
-  const axiomKeys = ['T', 'X', 'Y', 'C', 'KI', 'E'];
-  for (let r = 0; r < 9; r++) {
-    const row = [];
-    for (let c = 0; c < 9; c++) {
-      const key = axiomKeys[(r + c) % 6];
-      row.push({
-        id: `${r}-${c}`,
-        axiom: key,
-        ...AXIOME[key]
-      });
-    }
-    matrix.push(row);
-  }
-  return matrix;
-}
-
-function renderMatrix() {
-  const grid = document.getElementById('matrix9');
-  if (!grid) return;
-  grid.innerHTML = '';
-  state.matrix.forEach(row => {
-    row.forEach(cell => {
-      const div = document.createElement('div');
-      div.className = 'cell9';
-      div.innerHTML = `<span class="axiom">${cell.axiom}</span><br><span class="wert">${cell.value}</span>`;
-      div.title = `${cell.name}: ${cell.role}`;
-      grid.appendChild(div);
-    });
-  });
-}
-
-function renderAxiome() {
-  const list = document.getElementById('axiomList');
-  list.innerHTML = '';
-  Object.entries(AXIOME).forEach(([key, ax]) => {
-    const div = document.createElement('div');
-    div.className = 'axiom-item';
-    div.innerHTML = `<span class="name">${key}</span><br><span class="value">${ax.value}</span><br><span class="role">${ax.role}</span>`;
-    div.style.borderColor = ax.color + '44';
-    list.appendChild(div);
-  });
-}
-
-function renderFiguren() {
-  const grid = document.getElementById('figureGrid');
-  grid.innerHTML = '';
-  Object.entries(FIGUREN).forEach(([name, fig]) => {
-    const div = document.createElement('div');
-    div.className = 'figure-item';
-    div.innerHTML = `<span class="fig">${fig.symbol}</span><br><span class="name">${name}</span><br><span class="wert">${fig.wert}</span>`;
-    grid.appendChild(div);
-  });
-}
-
-function renderAir() {
-  const grid = document.getElementById('airAxis');
-  grid.innerHTML = '';
-  Object.entries(state.air).forEach(([key, ax]) => {
-    const div = document.createElement('div');
-    div.className = 'air-item';
-    div.innerHTML = `<span class="name">${key}</span><br><span class="value">${ax.value.toFixed(2)}</span><br><span class="role">${ax.role}</span>`;
-    grid.appendChild(div);
-  });
-}
-
-// ─── SCORE ──────────────────────────────────────────────────
-function updateScore() {
-  document.getElementById('coinScore').textContent = state.coinScore;
-  document.getElementById('schachScore').textContent = state.schachScore;
-  document.getElementById('masseScore').textContent = state.masseScore;
-  document.getElementById('airScore').textContent = state.airScore;
-  document.getElementById('zugCount').textContent = state.zug;
-}
-
-// ─── RENDER CANVAS ──────────────────────────────────────────
-function renderCanvas(time) {
+function render() {
   const w = canvas.width, h = canvas.height;
   ctx.clearRect(0, 0, w, h);
 
   const grad = ctx.createRadialGradient(w/2, h/2, 10, w/2, h/2, w/2);
   grad.addColorStop(0, '#0a0a1a');
-  grad.addColorStop(1, '#000');
+  grad.addColorStop(0.5, '#050510');
+  grad.addColorStop(1, '#000000');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
 
-  // AIR-Spirale (6D)
-  const cx = w/2, cy = h/2;
-  const radius = Math.min(w, h) * 0.3;
-  const airFlow = state.air.AIR_Flow.value || 0;
-
+  ctx.strokeStyle = 'rgba(255,255,255,0.02)';
+  ctx.lineWidth = 0.5;
   ctx.beginPath();
-  ctx.strokeStyle = `rgba(0, 200, 255, ${0.1 + airFlow * 0.05})`;
-  ctx.lineWidth = 1 + airFlow * 0.5;
-  for (let t = 0; t < 200; t++) {
-    const tx = cx + Math.cos(time * 0.02 + t * 0.08) * (t * 0.6 + airFlow * 5);
-    const ty = cy + Math.sin(time * 0.02 + t * 0.08) * (t * 0.6 + airFlow * 5);
-    ctx.lineTo(tx, ty);
-  }
+  ctx.moveTo(0, h * 0.8);
+  ctx.lineTo(w, h * 0.8);
   ctx.stroke();
 
-  // 6D-Orbit-Punkte
-  for (let i = 0; i < 6; i++) {
-    const angle = time * 0.01 + i * 1.047;
-    const x = cx + Math.cos(angle) * (radius + i * 8);
-    const y = cy + Math.sin(angle) * (radius + i * 8);
-    ctx.beginPath();
-    ctx.arc(x, y, 3 + i * 0.5, 0, Math.PI * 2);
-    ctx.fillStyle = `hsl(${i * 60 + 120}, 100%, 50%)`;
-    ctx.fill();
+  if (shuffleMode) {
+    for (let i = 0; i < 30; i++) {
+      const x = (i / 30) * w;
+      const y = h * 0.8 + Math.sin(i * 0.5 + time / 500) * 6;
+      const alpha = 0.02 + Math.sin(i * 0.3 + time / 700) * 0.015;
+      ctx.fillStyle = `rgba(255,170,0,${alpha})`;
+      ctx.beginPath();
+      ctx.arc(x, y, 2 + Math.sin(time / 400 + i) * 1, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
-  // AIR_rITZ / AIV_WITZ
-  const ritZ = state.air.AIR_rITZ.value || 0;
-  const witZ = state.air.AIV_WITZ.value || 0;
-  ctx.fillStyle = '#00ccff';
-  ctx.font = '10px Consolas';
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#ffaa0044';
+  ctx.font = '14px monospace';
   ctx.textAlign = 'center';
-  ctx.fillText(`↑ AIR ${ritZ.toFixed(2)}`, cx - 40, 20);
-  ctx.fillText(`↓ AIV ${witZ.toFixed(2)}`, cx + 40, 20);
+  ctx.textBaseline = 'top';
+  ctx.fillText(`🎯 MOVE: ${currentMove}`, w/2, h * 0.82);
+
+  ctx.fillStyle = '#ff444466';
+  ctx.font = '14px monospace';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.fillText(`🔴 ${p1Score}`, 12, 10);
+  ctx.fillStyle = '#00ccff66';
+  ctx.textAlign = 'right';
+  ctx.fillText(`🔵 ${p2Score}`, w - 12, 10);
+
+  ctx.fillStyle = '#445555';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText(`🔄 ${Math.round(spinAngle)}°`, w/2, 4);
+
+  const scale = Math.min(w, h) * 0.075;
+  const p1x = w * p1.x, p1y = h * 0.7;
+  const p2x = w * p2.x, p2y = h * 0.7;
+
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.beginPath();
+  ctx.ellipse(p1x, h * 0.82, scale * 0.45, scale * 0.12, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(p2x, h * 0.82, scale * 0.45, scale * 0.12, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  drawStickman(ctx, p1x, p1y, p1.pose, p1.color, 'P1', scale, 1, p1.rot + spinAngle * 0.02);
+  drawStickman(ctx, p2x, p2y, p2.pose, p2.color, 'P2', scale, 1, p2.rot + spinAngle * 0.02);
+
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 0.5;
+  ctx.setLineDash([4, 8]);
+  ctx.beginPath();
+  ctx.moveTo(p1x, p1y - scale * 1.2);
+  ctx.lineTo(p2x, p2y - scale * 1.2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  if (shuffleMode) {
+    ctx.fillStyle = '#ffaa0044';
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('🔀 SHUFFLE', w/2, h * 0.78);
+  }
 }
 
-// ─── ZUG ────────────────────────────────────────────────────
-function zugMachen() {
-  state.zug++;
-  const zugKeys = Object.keys(ZUEGE);
-  const key = zugKeys[state.zug % zugKeys.length];
-  const zug = ZUEGE[key];
-
-  const axiom = AXIOME[zug.axiom];
-  const punkt = zug.ergebnis + (state.zug * 2);
-
-  state.coinScore += punkt;
-  state.schachScore += zug.wert * zug.faktor;
-  state.masseScore += axiom.value * zug.faktor;
-
-  // AIR-Achsen bewegen
-  state.air.AIR_rITZ.value += Math.sin(state.zug * 0.1) * 2;
-  state.air.AIV_WITZ.value += Math.cos(state.zug * 0.1) * 2;
-  state.air.AIR_Flow.value = (state.air.AIR_rITZ.value + state.air.AIV_WITZ.value) / 2;
-
-  state.airScore += Math.abs(state.air.AIR_rITZ.value) + Math.abs(state.air.AIV_WITZ.value);
-
-  state.history.push({ zug: state.zug, key, punkt, coin: state.coinScore, schach: state.schachScore, masse: state.masseScore, air: state.airScore });
-
-  updateScore();
-  renderZugWerte();
-  renderUnsterblich();
-  renderAir();
-  renderCanvas(state.zug);
-
-  log(`♟️ ${key}: ${punkt} Punkte | COIN: ${state.coinScore} | AIR: ${state.airScore.toFixed(2)}`, 'schach');
-
-  if (state.coinScore >= 2048) log('🪙 SIEG durch COIN-Überladung!', 'coin');
-  if (state.schachScore >= 512) log('♟️ SIEG durch Professionalität!', 'schach');
-  if (state.masseScore >= 4096) log('⚖️ SIEG durch MASSE!', 'ok');
-  if (state.airScore >= 1024) log('🌬️ SIEG durch AIR-Überladung!', 'air');
-}
-
-function renderZugWerte() {
-  const el = document.getElementById('zugWerte');
-  let out = '';
-  const zugKeys = Object.keys(ZUEGE);
-  zugKeys.forEach(key => {
-    const z = ZUEGE[key];
-    out += `${key}: ${z.axiom}(${z.wert}) × ${z.faktor} = ${z.ergebnis}\n`;
+function updateUI() {
+  document.getElementById('p1Score').textContent = p1Score;
+  document.getElementById('p2Score').textContent = p2Score;
+  document.getElementById('moveDisplay').textContent = currentMove;
+  document.getElementById('moveStatus').textContent = currentMove;
+  document.getElementById('spinStatus').textContent = `${Math.round(spinAngle)}°`;
+  document.getElementById('recallCount').textContent = recallCount;
+  document.querySelectorAll('.key-btn.p1').forEach(b => {
+    b.classList.toggle('active-p1', b.dataset.key === p1.pose);
   });
-  out += `\n➡️ Letzter Zug: ${state.zug}`;
-  el.textContent = out;
+  document.querySelectorAll('.key-btn.p2').forEach(b => {
+    b.classList.toggle('active-p2', b.dataset.key === p2.pose);
+  });
 }
 
-function renderUnsterblich() {
-  const el = document.getElementById('unsterblich');
-  const slide = Math.sqrt(
-    state.coinScore * state.coinScore +
-    state.schachScore * state.schachScore +
-    state.masseScore * state.masseScore +
-    state.airScore * state.airScore
-  );
-  const wette = {
-    coin: state.coinScore > state.schachScore ? 'COIN führt' :
-          state.schachScore > state.coinScore ? 'SCHACH führt' :
-          'Gleichstand',
-    masse: state.masseScore > 100 ? 'HOCH' : 'NIEDRIG',
-    air: state.airScore > 50 ? '🌬️ AIR aktiv' : '🌬️ AIR ruht'
-  };
-  const unsterblich = slide > 100 ? '⚡ UNSTERBLICHKEIT erreicht!' : '⚡ Auf dem Weg...';
-  el.textContent = `SLIDE: ${slide.toFixed(2)}\nWETTE: ${wette.coin} | MASSE: ${wette.masse} | ${wette.air}\n${unsterblich}`;
-}
+function update() {
+  if (!running) return;
+  time += 16;
+  frame++;
 
-// ─── BOOT ──────────────────────────────────────────────────
-function boot() {
-  state.matrix = buildMatrix();
-  renderMatrix();
-  renderAxiome();
-  renderFiguren();
-  renderAir();
-  renderZugWerte();
-  renderUnsterblich();
-  renderCanvas(0);
-  log('⚡ UNSTERBLICHKEITS-ENGINE geladen', 'unsterblich');
-  log(`⚛️ ${Object.keys(AXIOME).length} Axiome geladen`, 'axiom');
-  log(`♟️ ${Object.keys(FIGUREN).length} Figuren geladen`, 'schach');
-  log(`🌬️ ${Object.keys(AIR_AXEN).length} AIR-Achsen geladen`, 'air');
-  updateScore();
-}
+  // Alle 30 Frames speichern
+  if (frame % 30 === 0) saveState();
 
-// ─── RESET ──────────────────────────────────────────────────
-function reset() {
-  state.zug = 0;
-  state.coinScore = 0;
-  state.schachScore = 0;
-  state.masseScore = 0;
-  state.airScore = 0;
-  state.unsterblichScore = 0;
-  state.history = [];
-  state.running = false;
-  state.autoMode = false;
-  state.air = { ...AIR_AXEN };
-  document.getElementById('btnAuto').textContent = '▶ AUTO';
-  updateScore();
-  renderZugWerte();
-  renderUnsterblich();
-  renderAir();
-  renderCanvas(0);
-  log('⟲ RESET — Alles zurückgesetzt', 'warn');
-}
-
-// ─── AUTO ──────────────────────────────────────────────────
-let autoInterval = null;
-
-function toggleAuto() {
-  state.autoMode = !state.autoMode;
-  document.getElementById('btnAuto').textContent = state.autoMode ? '⏸ PAUSE' : '▶ AUTO';
-  if (state.autoMode) {
-    state.running = true;
-    log('▶ AUTO-Modus aktiviert', 'warn');
-    if (autoInterval) clearInterval(autoInterval);
-    autoInterval = setInterval(() => {
-      if (state.autoMode) zugMachen();
-    }, 1000);
-  } else {
-    if (autoInterval) clearInterval(autoInterval);
-    log('⏸ AUTO-Modus pausiert', 'warn');
+  const moveKeys = Object.keys(POSES);
+  if (frame % 120 === 0) {
+    const randomKey = moveKeys[Math.floor(Math.random() * moveKeys.length)];
+    currentMove = POSES[randomKey]?.label || '—';
+    updateUI();
   }
-}
 
-// ─── UNSTERBLICH ────────────────────────────────────────────
-function unsterblich() {
-  const slide = Math.sqrt(
-    state.coinScore * state.coinScore +
-    state.schachScore * state.schachScore +
-    state.masseScore * state.masseScore +
-    state.airScore * state.airScore
-  );
-  state.unsterblichScore = slide;
-  log(`⚡ UNSTERBLICHKEIT: ${slide.toFixed(2)}`, 'unsterblich');
-  if (slide > 100) {
-    log('⚡ DU BIST UNSTERBLICH!', 'ok');
-  } else {
-    log(`⚡ Noch ${(100 - slide).toFixed(2)} bis zur Unsterblichkeit`, 'warn');
+  if (frame % 8 === 0) {
+    const keys1 = shuffleMode ? ['5','6','7','8','9','1','2','3','4'] : ['1','2','3','4','5','6','7','8','9'];
+    const key1 = keys1[Math.floor(Math.random() * keys1.length)];
+    p1.pose = key1;
+    if (p1.pose === currentMove || Math.random() < 0.15) p1Score++;
+    if (shuffleMode) p1.rot += (Math.random() - 0.5) * 0.05;
+
+    const keys2 = shuffleMode ? ['y','x','c','q','w','e','a','z','d'] : ['q','w','e','a','z','d','y','x','c'];
+    const key2 = keys2[Math.floor(Math.random() * keys2.length)];
+    p2.pose = key2;
+    if (p2.pose === currentMove || Math.random() < 0.15) p2Score++;
+    if (shuffleMode) p2.rot += (Math.random() - 0.5) * 0.05;
+    updateUI();
   }
-  renderUnsterblich();
+
+  if (spinSpeed !== 0) {
+    spinAngle += spinSpeed * 8;
+    document.getElementById('spinStatus').textContent = `${Math.round(spinAngle)}°`;
+  }
+
+  const status = p1Score > p2Score ? '🔴 P1 führt' : p2Score > p1Score ? '🔵 P2 führt' : '⚖️ Gleichstand';
+  document.getElementById('statusText').textContent = status;
+  document.getElementById('recallStatus').textContent = history.length > 0 ? `⏪ ${history.length} verfügbar` : '⏪ leer';
+
+  render();
+  requestAnimationFrame(update);
 }
 
-// ─── UHR ──────────────────────────────────────────────────
-function updateClock() {
-  document.getElementById('clock').textContent = `⏱️ ${new Date().toLocaleTimeString()}`;
-}
-setInterval(updateClock, 1000);
-updateClock();
+// ===== TASTATUR =====
+document.addEventListener('keydown', (e) => {
+  const key = e.key.toLowerCase();
+  if (key >= '1' && key <= '9') {
+    e.preventDefault();
+    p1.pose = key;
+    if (key === currentMove || Math.random() < 0.2) p1Score++;
+    if (shuffleMode) p1.rot += 0.1;
+    updateUI();
+    return;
+  }
+  if (['q','w','e','a','z','d','y','x','c'].includes(key)) {
+    e.preventDefault();
+    p2.pose = key;
+    if (key === currentMove || Math.random() < 0.2) p2Score++;
+    if (shuffleMode) p2.rot += 0.1;
+    updateUI();
+    return;
+  }
+  if (key === 'r') { e.preventDefault(); recallState(); }
+});
 
-// ─── EVENTS ──────────────────────────────────────────────────
-document.getElementById('btnBoot').addEventListener('click', boot);
-document.getElementById('btnZug').addEventListener('click', zugMachen);
-document.getElementById('btnScore').addEventListener('click', () => {
-  log(`🪙 SCORE: COIN=${state.coinScore} | SCHACH=${state.schachScore} | MASSE=${state.masseScore} | AIR=${state.airScore.toFixed(2)}`, 'coin');
+// ===== BUTTONS =====
+document.getElementById('btnStart').addEventListener('click', () => {
+  running = !running;
+  document.getElementById('btnStart').classList.toggle('active');
+  document.getElementById('btnStart').textContent = running ? '▶ START' : '⏸ PAUSE';
+  if (running) update();
 });
-document.getElementById('btnMasse').addEventListener('click', () => {
-  const slide = Math.sqrt(
-    state.coinScore * state.coinScore +
-    state.schachScore * state.schachScore +
-    state.masseScore * state.masseScore +
-    state.airScore * state.airScore
-  );
-  log(`⚖️ MASSE-SLIDE: ${slide.toFixed(2)}`, 'ok');
-});
-document.getElementById('btnAir').addEventListener('click', () => {
-  log(`🌬️ AIR: rITZ=${state.air.AIR_rITZ.value.toFixed(2)} | WITZ=${state.air.AIV_WITZ.value.toFixed(2)} | FLOW=${state.air.AIR_Flow.value.toFixed(2)}`, 'air');
-});
-document.getElementById('btnUnsterblich').addEventListener('click', unsterblich);
-document.getElementById('btnReset').addEventListener('click', reset);
-document.getElementById('btnAuto').addEventListener('click', toggleAuto);
 
-// ─── INIT ──────────────────────────────────────────────────
-boot();
-log('⚡ UNSTERBLICHKEITS-ENGINE — bereit', 'unsterblich');
-log('⌨️  ZUG = Zug | SCORE = Score | MASSE = Slide | AIR = Air | UNSTERBLICH = Unsterblichkeit', 'warn');
+document.getElementById('btnMove').addEventListener('click', () => {
+  const keys = Object.keys(POSES);
+  const randomKey = keys[Math.floor(Math.random() * keys.length)];
+  currentMove = POSES[randomKey]?.label || '—';
+  updateUI();
+});
+
+document.getElementById('btnShuffle').addEventListener('click', () => {
+  shuffleMode = !shuffleMode;
+  document.getElementById('btnShuffle').classList.toggle('active');
+  document.getElementById('btnShuffle').textContent = shuffleMode ? '🔀 SHUFFLE·ON' : '🔀 SHUFFLE';
+});
+
+document.getElementById('btnSpin').addEventListener('click', () => {
+  spinSpeed = spinSpeed === 0 ? 0.02 : spinSpeed === 0.02 ? 0.05 : 0;
+  document.getElementById('btnSpin').classList.toggle('active');
+  document.getElementById('btnSpin').textContent = spinSpeed ? `🔄 DREH ${Math.round(spinSpeed*100)}%` : '🔄 DREH';
+});
+
+document.getElementById('btnRecall').addEventListener('click', () => {
+  if (recallState()) {
+    document.getElementById('recallStatus').textContent = `⏪ ${recallCount}`;
+  } else {
+    document.getElementById('recallStatus').textContent = '❌ kein Recall';
+  }
+});
+
+document.getElementById('btnProof').addEventListener('click', () => {
+  const proof = document.createElement('div');
+  proof.style.cssText = `
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 9999; backdrop-filter: blur(20px);
+    font-family: 'Consolas', monospace;
+  `;
+  proof.innerHTML = `
+    <div style="text-align:center; padding:40px; border:1px solid rgba(255,170,0,0.1); border-radius:20px; background:rgba(10,10,20,0.6); max-width:450px;">
+      <div style="font-size:48px;">💃</div>
+      <div style="color:#ffaa00; font-size:20px; margin:12px 0; letter-spacing:4px;">SHUFFLE · DREH · RECALL</div>
+      <div style="color:#88ddbb; font-size:13px; line-height:1.8;">
+        🔴 P1: ${p1Score} · 🔵 P2: ${p2Score}<br>
+        🎯 MOVE: ${currentMove}<br>
+        🔄 DREH: ${Math.round(spinAngle)}°<br>
+        🔀 SHUFFLE: ${shuffleMode ? 'AN' : 'AUS'}<br>
+        ⏪ RECALLS: ${recallCount}
+      </div>
+      <button onclick="this.parentElement.parentElement.remove()" style="
+        margin-top:14px; background:rgba(20,35,35,0.2); color:#668888;
+        border:1px solid rgba(255,255,255,0.02); padding:6px 20px;
+        border-radius:18px; cursor:pointer; font-family:inherit; font-size:9px;
+      ">⏎ SCHLIESSEN</button>
+    </div>
+  `;
+  document.body.appendChild(proof);
+});
+
+document.getElementById('btnReset').addEventListener('click', () => {
+  p1Score = 0; p2Score = 0; currentMove = '—';
+  p1.pose = '5'; p2.pose = 'c';
+  p1.rot = 0; p2.rot = 0;
+  spinAngle = 0; shuffleMode = false; spinSpeed = 0;
+  recallCount = 0; history = [];
+  document.getElementById('recallCount').textContent = '0';
+  document.getElementById('recallStatus').textContent = 'bereit';
+  document.getElementById('btnShuffle').textContent = '🔀 SHUFFLE';
+  document.getElementById('btnShuffle').classList.remove('active');
+  document.getElementById('btnSpin').textContent = '🔄 DREH';
+  document.getElementById('btnSpin').classList.remove('active');
+  document.querySelectorAll('.key-btn').forEach(b => b.className = 'key-btn');
+  document.getElementById('statusText').textContent = 'reset';
+  updateUI();
+});
+
+// ===== INIT =====
+resizeCanvas();
+setTimeout(resizeCanvas, 200);
+saveState();
+update();
+
+console.log('💃 TANZ · SHUFFLE · DREH · RECALL');
+console.log('🔴 P1: 1-9 · 🔵 P2: QWEAZDYXC');
+console.log('⏪ RECALL: Button oder Taste R');
 </script>
 
 </body>
