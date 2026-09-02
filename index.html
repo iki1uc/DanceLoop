@@ -3,746 +3,581 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CONTINIUM · PYRAMIDE · WÜRFELBILDUNG</title>
+<title>🌀 TANZ · SHOW.live · KRIECHEN → STEHEN · GENERAL</title>
 
 <style>
-:root {
-    --bg: #0a0a12;
-    --fg: #0ff;
-    --syn: #ff6b6b;
-    --quant: #6b6bff;
-    --respo: #ffd93d;
-    --gold: #ffd700;
-    --tokio: #ff6b6b;
-    --corlu: #6bff6b;
-    --hh: #6b6bff;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { box-sizing:border-box; margin:0; padding:0; }
 body {
-    background: var(--bg);
-    color: var(--fg);
-    font-family: 'Consolas', monospace;
-    min-height: 100vh;
-    overflow: hidden;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    gap: 6px;
-    padding: 10px;
+  background: #0a0a0f;
+  color: #c8d0d0;
+  font-family: 'Consolas', monospace;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  background: radial-gradient(ellipse at 50% 50%, #0a0a1a, #000000);
+}
+.container {
+  max-width: 1200px;
+  width: 100%;
+  background: rgba(10,10,20,0.3);
+  border: 1px solid rgba(255,170,0,0.03);
+  border-radius: 20px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+}
+.header {
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+.header h1 {
+  font-size: 24px;
+  background: linear-gradient(90deg, #ff4444, #ffaa00, #00ff88, #00ccff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 4px;
+}
+.header .sub {
+  color: #445555;
+  font-size: 10px;
+  letter-spacing: 3px;
+}
+.header .sub .gen { color: #ffaa00; }
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+}
+@media (max-width:800px){ .main-grid { grid-template-columns:1fr; } }
+
+.canvas-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: rgba(0,0,0,0.4);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.02);
+  overflow: hidden;
+}
+#tanzCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid var(--gold);
-    padding-bottom: 6px;
-    flex-wrap: wrap;
-    gap: 4px;
+.panel {
+  background: rgba(10,10,20,0.2);
+  border: 1px solid rgba(255,255,255,0.02);
+  border-radius: 12px;
+  padding: 12px;
 }
-header h1 {
-    font-size: 18px;
-    color: var(--gold);
-    text-shadow: 0 0 20px var(--gold);
-    letter-spacing: 3px;
-}
-header h1 .pyra { color: var(--tokio); }
-header h1 .cube { color: var(--corlu); }
-header h1 .quant { color: var(--quant); }
-#info-bar { font-size: 10px; color: #666; display: flex; gap: 12px; align-items: center; }
-
-main {
-    display: grid;
-    grid-template-columns: 3fr 1.2fr;
-    gap: 8px;
-    height: 100%;
-    min-height: 0;
+.panel h3 {
+  font-size: 10px;
+  color: #ffaa00;
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+  padding-bottom: 4px;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
 }
 
-#canvas-wrap {
-    background: #0a0a0f;
-    border: 1px solid #1a1a2a;
-    border-radius: 12px;
-    padding: 6px;
-    position: relative;
-    overflow: hidden;
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin: 6px 0;
 }
-#canvas-wrap canvas {
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
-    display: block;
+.status-item {
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 9px;
+  display: flex;
+  justify-content: space-between;
 }
+.status-item .label { color: #445555; }
+.status-item .value.on { color: #00ff88; }
+.status-item .value.off { color: #445555; }
+.status-item .value.pulse { color: #ff66ff; animation: pulse 0.8s infinite; }
+@keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
 
-#panel {
-    background: #0a0a0f;
-    border: 1px solid #1a1a2a;
-    border-radius: 12px;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    overflow-y: auto;
-    max-height: 100%;
+.move-bar {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin: 6px 0;
 }
-#panel h3 { font-size: 10px; color: #666; border-bottom: 1px solid #1a1a2a; padding-bottom: 4px; }
+.move-btn {
+  background: rgba(20,35,35,0.2);
+  color: #668888;
+  border: 1px solid rgba(255,255,255,0.02);
+  padding: 4px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 9px;
+  transition: all 0.2s;
+}
+.move-btn:hover { background: rgba(40,80,70,0.08); color: #aaeedd; }
+.move-btn.active { border-color: #ffaa0066; color: #ffaa00; background: rgba(255,170,0,0.05); }
 
-#log {
-    flex: 1;
-    overflow-y: auto;
-    font-size: 9px;
-    color: #6a6a8a;
-    line-height: 1.4;
-    min-height: 60px;
-    max-height: 140px;
-    background: #06060a;
-    border-radius: 4px;
-    padding: 3px 5px;
+.controls {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin: 6px 0;
 }
-#log .entry { padding: 1px 0; border-bottom: 1px solid #0a0a12; }
-#log .time { color: #444; }
-#log .msg.syn { color: var(--syn); }
-#log .msg.quant { color: var(--quant); }
-#log .msg.respo { color: var(--respo); }
-#log .msg.ok { color: #4f4; }
-#log .msg.warn { color: #ff4; }
-#log .msg.tokio { color: var(--tokio); }
-#log .msg.corlu { color: var(--corlu); }
+.controls button {
+  background: rgba(20,35,35,0.2);
+  color: #668888;
+  border: 1px solid rgba(255,255,255,0.02);
+  padding: 4px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 8px;
+  transition: all 0.2s;
+}
+.controls button:hover { background: rgba(40,80,70,0.08); color: #aaeedd; }
+.controls button.primary { border-color: #ffaa0066; color: #ffaa00; }
+.controls button.primary:hover { background: rgba(255,170,0,0.05); }
+.controls button.recall { border-color: #00ccff66; color: #00ccff; }
+.controls button.recall:hover { background: rgba(0,204,255,0.05); }
 
-#metrics {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 3px;
-    font-size: 9px;
+.log {
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 7px;
+  color: #445555;
+  max-height: 80px;
+  overflow-y: auto;
+  font-family: monospace;
+  line-height: 1.5;
+  margin-top: 6px;
+  border: 1px solid rgba(255,255,255,0.01);
 }
-.metric {
-    background: #0e0e1a;
-    border-radius: 4px;
-    padding: 4px 6px;
-    text-align: center;
-    border: 1px solid #1a1a2a;
-}
-.metric .label { color: #666; font-size: 7px; text-transform: uppercase; }
-.metric .value { font-size: 14px; font-weight: bold; }
-.metric.syn .value { color: var(--syn); }
-.metric.quant .value { color: var(--quant); }
-.metric.respo .value { color: var(--respo); }
+.log .hl { color: #7fc9ff; }
+.log .ok { color: #00ff88; }
+.log .flow { color: #ffaa00; }
+.log .whirl { color: #ff66ff; }
+.log .gen { color: #ffd700; }
 
-#controls {
-    display: flex;
-    gap: 3px;
-    flex-wrap: wrap;
-    margin-top: 4px;
+.footer {
+  text-align: center;
+  margin-top: 10px;
+  color: #1a1a2a;
+  font-size: 7px;
+  letter-spacing: 2px;
 }
-button {
-    background: #111;
-    color: var(--fg);
-    border: 1px solid #333;
-    padding: 4px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 10px;
-    transition: all 0.2s;
-}
-button:hover { background: #1a1a2a; border-color: var(--gold); }
-button:active { transform: scale(0.95); }
-button.primary { border-color: var(--gold); color: var(--gold); }
-button.primary:hover { background: var(--gold); color: #000; }
-button.syn { border-color: var(--syn); color: var(--syn); }
-button.syn:hover { background: var(--syn); color: #000; }
-button.quant { border-color: var(--quant); color: var(--quant); }
-button.quant:hover { background: var(--quant); color: #000; }
-button.respo { border-color: var(--respo); color: var(--respo); }
-button.respo:hover { background: var(--respo); color: #000; }
-button.danger { border-color: #f44; color: #f44; }
-button.danger:hover { background: #f44; color: #000; }
-button.active { border-color: var(--gold); background: var(--gold); color: #000; }
-
-/* Würfel-Animation */
-.pyramid-glow {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 9px;
-    color: #444;
-    pointer-events: none;
-    text-align: center;
-}
-
-@media (max-width: 800px) {
-    main { grid-template-columns: 1fr; }
-    #panel { max-height: 250px; }
-}
+.footer span { color: #ffaa00; }
 </style>
 </head>
 <body>
 
-<header>
-    <h1>
-        <span class="pyra">🔺 PYRAMIDE</span>
-        <span style="color:#666;">·</span>
-        <span class="cube">◈ WÜRFELBILDUNG</span>
-        <span style="color:#666;">·</span>
-        <span class="quant">⚛ CONTINIUM</span>
-    </h1>
-    <div id="info-bar">
-        <span id="clock">⏱️ --:--:--</span>
-        <span id="state-display" style="color:var(--gold);">● bereit</span>
-        <span id="cycle-display" style="color:#666;">Zyklus 0</span>
+<div class="container">
+
+<div class="header">
+  <h1>🌀 TANZ · SHOW.live · GENERAL</h1>
+  <div class="sub">KRIECHEN → STEHEN · <span class="gen">RECALL</span> · SHUFFLE · DREH</div>
+</div>
+
+<div class="main-grid">
+
+  <!-- CANVAS -->
+  <div class="canvas-wrap">
+    <canvas id="tanzCanvas"></canvas>
+  </div>
+
+  <!-- PANEL -->
+  <div class="panel">
+    <h3>🎯 GENERAL · MOVE</h3>
+
+    <div class="status-grid">
+      <div class="status-item"><span class="label">🔴 P1</span><span class="value on" id="p1Status">5</span></div>
+      <div class="status-item"><span class="label">🔵 P2</span><span class="value on" id="p2Status">c</span></div>
+      <div class="status-item"><span class="label">🎯 MOVE</span><span class="value pulse" id="moveStatus">—</span></div>
+      <div class="status-item"><span class="label">🔄 DREH</span><span class="value" id="spinStatus">0°</span></div>
+      <div class="status-item"><span class="label">🔀 SHUFFLE</span><span class="value off" id="shuffleStatus">AUS</span></div>
+      <div class="status-item"><span class="label">⏪ RECALL</span><span class="value" id="recallStatus">0</span></div>
     </div>
-</header>
 
-<main>
-    <div id="canvas-wrap">
-        <canvas id="pyraCanvas"></canvas>
-        <div class="pyramid-glow">2268 · 756 · 243 · φ = 1.618</div>
+    <div class="move-bar">
+      <span style="font-size:7px;color:#445555;margin-right:4px;">POSEN:</span>
+      <button class="move-btn" data-pose="1">1</button>
+      <button class="move-btn" data-pose="2">2</button>
+      <button class="move-btn" data-pose="3">3</button>
+      <button class="move-btn" data-pose="4">4</button>
+      <button class="move-btn" data-pose="5">5</button>
+      <button class="move-btn" data-pose="6">6</button>
+      <button class="move-btn" data-pose="7">7</button>
+      <button class="move-btn" data-pose="8">8</button>
+      <button class="move-btn" data-pose="9">9</button>
+      <button class="move-btn" data-pose="c">C</button>
+      <button class="move-btn" data-pose="z">Z</button>
     </div>
 
-    <div id="panel">
-        <h3>📊 PYRAMIDE · WÜRFEL · CONTINIUM</h3>
-
-        <div id="metrics">
-            <div class="metric syn">
-                <div class="label">⟳ SYN · 90°</div>
-                <div class="value" id="syn-value">0.00</div>
-            </div>
-            <div class="metric quant">
-                <div class="label">⚛ QUANT · 120°</div>
-                <div class="value" id="quant-value">0.00</div>
-            </div>
-            <div class="metric respo">
-                <div class="label">◈ RESPO · φ</div>
-                <div class="value" id="respo-value">0.00</div>
-            </div>
-        </div>
-
-        <div id="log">
-            <div class="entry"><span class="time">[INIT]</span> <span class="msg respo">🔺 PYRAMIDE · WÜRFELBILDUNG geladen</span></div>
-            <div class="entry"><span class="time">[INIT]</span> <span class="msg tokio">🌀 2268 · Tokio-Orbit</span></div>
-            <div class="entry"><span class="time">[INIT]</span> <span class="msg corlu">🌀 756 · Corlu-Orbit</span></div>
-            <div class="entry"><span class="time">[INIT]</span> <span class="msg quant">🌀 243 · HH-Orbit</span></div>
-            <div class="entry"><span class="time">[INIT]</span> <span class="msg ok">✅ Pyramide → Würfel → Singularität</span></div>
-        </div>
-
-        <div id="controls">
-            <button class="primary" id="btn-start">▶ START</button>
-            <button class="syn" id="btn-syn">⟳ SYN</button>
-            <button class="quant" id="btn-quant">⚛ QUANT</button>
-            <button class="respo" id="btn-respo">◈ RESPO</button>
-            <button class="danger" id="btn-reset">⟲ RESET</button>
-            <button id="btn-auto">▶ AUTO</button>
-        </div>
+    <div class="controls">
+      <button class="primary" id="btnGeneral">⬆ GENERAL · KRIECHEN→STEHEN</button>
+      <button id="btnShuffle">🔀 SHUFFLE</button>
+      <button id="btnSpin">🔄 DREH</button>
+      <button class="recall" id="btnRecall">⏪ RECALL</button>
+      <button id="btnReset">⟲ RESET</button>
     </div>
-</main>
+
+    <div class="log" id="log">[🌀] TANZ · SHOW.live · GENERAL · bereit</div>
+  </div>
+
+</div>
+
+<div class="footer">🌀 TANZ · SHOW.live · GENERAL · <span>wieimmer4u</span></div>
+
+</div>
 
 <script>
-// ============================================================
-// 1. KONSTANTEN — PYRAMIDE · WÜRFEL
-// ============================================================
-const PHI = 1.61803398875;
-const DEG_90 = Math.PI / 2;
-const DEG_120 = (2 * Math.PI) / 3;
-const DEG_180 = Math.PI;
+// ================================================================
+// TANZ · SHOW.live · GENERAL · KRIECHEN → STEHEN
+// ================================================================
 
-// ORBIT-KONSTANTEN (aus QUANT.js)
-const ORBITS = {
-    tokio: 2268,
-    corlu: 756,
-    hh: 243
-};
-
-// ============================================================
-// 2. CANVAS SETUP — 3D PYRAMIDE
-// ============================================================
-const canvas = document.getElementById('pyraCanvas');
+// ─── CANVAS ──────────────────────────────────────────────────────
+const canvas = document.getElementById('tanzCanvas');
 const ctx = canvas.getContext('2d');
-let W, H, cx, cy, scale;
 
 function resizeCanvas() {
-    const wrap = document.getElementById('canvas-wrap');
-    const rect = wrap.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
-    W = canvas.width;
-    H = canvas.height;
-    cx = W / 2;
-    cy = H / 2;
-    scale = Math.min(W, H) * 0.35;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width || 700;
+  canvas.height = rect.height || (rect.width * 9/16) || 390;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-// ============================================================
-// 3. 3D-HELFER (PYRAMIDE → WÜRFEL)
-// ============================================================
-function rotate3D(x, y, z, rotX, rotY, rotZ) {
-    // Rotation um X
-    let y1 = y * Math.cos(rotX) - z * Math.sin(rotX);
-    let z1 = y * Math.sin(rotX) + z * Math.cos(rotX);
-    // Rotation um Y
-    let x1 = x * Math.cos(rotY) + z1 * Math.sin(rotY);
-    let z2 = -x * Math.sin(rotY) + z1 * Math.cos(rotY);
-    // Rotation um Z
-    let x2 = x1 * Math.cos(rotZ) - y1 * Math.sin(rotZ);
-    let y2 = x1 * Math.sin(rotZ) + y1 * Math.cos(rotZ);
-    return { x: x2, y: y2, z: z2 };
-}
-
-function project(x, y, z, scale) {
-    const dist = 800;
-    const fov = 400;
-    const factor = fov / (fov + z + dist);
-    return {
-        x: cx + x * scale * factor,
-        y: cy + y * scale * factor,
-        factor: factor
-    };
-}
-
-// ============================================================
-// 4. PYRAMIDE · WÜRFEL-GENERATOR
-// ============================================================
-function generatePyramid(level, rot) {
-    const size = Math.pow(3, level) * 0.5;
-    const points = [];
-
-    // Basis (Quadrat)
-    const basePoints = [
-        { x: -size, y: -size, z: -size },
-        { x: size, y: -size, z: -size },
-        { x: size, y: -size, z: size },
-        { x: -size, y: -size, z: size }
-    ];
-
-    // Spitze der Pyramide (oben)
-    const apex = { x: 0, y: size * 1.5, z: 0 };
-
-    // Basis-Rand
-    for (let i = 0; i < 4; i++) {
-        const p1 = basePoints[i];
-        const p2 = basePoints[(i + 1) % 4];
-        points.push({ x1: p1.x, y1: p1.y, z1: p1.z, x2: p2.x, y2: p2.y, z2: p2.z, type: 'base' });
-    }
-
-    // Kanten zur Spitze
-    for (const p of basePoints) {
-        points.push({ x1: p.x, y1: p.y, z1: p.z, x2: apex.x, y2: apex.y, z2: apex.z, type: 'edge' });
-    }
-
-    // Würfel-Ecken (zusätzlich für WÜRFELBILDUNG)
-    const cubeCorners = [
-        { x: -size, y: -size, z: -size },
-        { x: size, y: -size, z: -size },
-        { x: size, y: -size, z: size },
-        { x: -size, y: -size, z: size },
-        { x: -size, y: size, z: -size },
-        { x: size, y: size, z: -size },
-        { x: size, y: size, z: size },
-        { x: -size, y: size, z: size }
-    ];
-
-    // Würfel-Kanten
-    const cubeEdges = [
-        [0,1], [1,2], [2,3], [3,0],
-        [4,5], [5,6], [6,7], [7,4],
-        [0,4], [1,5], [2,6], [3,7]
-    ];
-
-    for (const [i, j] of cubeEdges) {
-        const p1 = cubeCorners[i];
-        const p2 = cubeCorners[j];
-        points.push({ x1: p1.x, y1: p1.y, z1: p1.z, x2: p2.x, y2: p2.y, z2: p2.z, type: 'cube' });
-    }
-
-    // Rotieren
-    const rotated = points.map(p => {
-        const r1 = rotate3D(p.x1, p.y1, p.z1, rot.x, rot.y, rot.z);
-        const r2 = rotate3D(p.x2, p.y2, p.z2, rot.x, rot.y, rot.z);
-        return { ...p, x1: r1.x, y1: r1.y, z1: r1.z, x2: r2.x, y2: r2.y, z2: r2.z };
-    });
-
-    return rotated;
-}
-
-// ============================================================
-// 5. STATE
-// ============================================================
-const state = {
-    running: false,
-    paused: false,
-    autoMode: false,
-    cycle: 0,
-    t: 0,
-    synValue: 0.5,
-    quantValue: 0.5,
-    respoValue: 0.5,
-    rotX: 0,
-    rotY: 0,
-    rotZ: 0,
-    level: 2, // 3^2 = 9
-    orbits: {
-        tokio: 0,
-        corlu: 0,
-        hh: 0
-    },
-    pyramidPoints: [],
-    showCube: true,
-    showPyramid: true
+// ─── POSEN ──────────────────────────────────────────────────────
+const POSES = {
+  '1': { armL:-0.6, armR:-0.4, legL:-0.3, legR:-0.1, body:0, head:0, label:'Step L' },
+  '2': { armL:-0.4, armR:-0.6, legL:-0.1, legR:-0.3, body:0.05, head:0.05, label:'Step R' },
+  '3': { armL:-0.8, armR:0.3, legL:-0.4, legR:0.1, body:0.1, head:0.1, label:'Arm L' },
+  '4': { armL:0.3, armR:-0.8, legL:0.1, legR:-0.4, body:0.15, head:0.15, label:'Arm R' },
+  '5': { armL:0.6, armR:0.6, legL:0, legR:0, body:0.2, head:0.2, label:'Stehen' },
+  '6': { armL:-0.9, armR:0.9, legL:-0.3, legR:0.3, body:0.25, head:0.25, label:'Spread' },
+  '7': { armL:0, armR:0, legL:-0.6, legR:0.6, body:0.3, head:0.3, label:'Split' },
+  '8': { armL:0.5, armR:-0.5, legL:-0.3, legR:-0.3, body:0.35, head:0.35, label:'Twist' },
+  '9': { armL:-0.3, armR:0.3, legL:0.3, legR:-0.3, body:0.4, head:0.4, label:'Spin' },
+  'q': { armL:-0.5, armR:-0.5, legL:-0.2, legR:-0.2, body:0.02, head:0.02, label:'Sway L' },
+  'w': { armL:0.5, armR:0.5, legL:0.2, legR:0.2, body:0.08, head:0.08, label:'Sway R' },
+  'e': { armL:-0.7, armR:0.15, legL:-0.35, legR:0.05, body:0.12, head:0.12, label:'Wave L' },
+  'a': { armL:0.15, armR:-0.7, legL:0.05, legR:-0.35, body:0.18, head:0.18, label:'Wave R' },
+  'z': { armL:0.7, armR:-0.3, legL:0.15, legR:-0.15, body:0.22, head:0.22, label:'Kriechen' },
+  'd': { armL:-0.3, armR:0.7, legL:-0.15, legR:0.15, body:0.28, head:0.28, label:'Grace' },
+  'y': { armL:0.3, armR:0.3, legL:-0.4, legR:0.4, body:0.32, head:0.32, label:'Float' },
+  'x': { armL:-0.6, armR:-0.6, legL:0.4, legR:-0.4, body:0.38, head:0.38, label:'Cross' },
+  'c': { armL:0, armR:0, legL:0, legR:0, body:0, head:0, label:'Center' }
 };
 
-// ============================================================
-// 6. LOG
-// ============================================================
-function log(msg, type = 'info') {
-    const logDiv = document.getElementById('log');
-    const entry = document.createElement('div');
-    entry.className = 'entry';
-    const time = new Date().toLocaleTimeString();
-    const cls = type === 'ok' ? 'ok' : type === 'err' ? 'err' : type === 'warn' ? 'warn' :
-                type === 'syn' ? 'syn' : type === 'quant' ? 'quant' : type === 'respo' ? 'respo' :
-                type === 'tokio' ? 'tokio' : type === 'corlu' ? 'corlu' : '';
-    entry.innerHTML = `<span class="time">[${time}]</span> <span class="msg ${cls}">${msg}</span>`;
-    logDiv.appendChild(entry);
-    logDiv.scrollTop = logDiv.scrollHeight;
-    while (logDiv.children.length > 100) logDiv.removeChild(logDiv.firstChild);
+// ─── STATE ──────────────────────────────────────────────────────
+let p1 = { x: 0.30, y: 0.55, pose: 'z', color: '#ff4444', rot: 0 };
+let p2 = { x: 0.70, y: 0.55, pose: 'c', color: '#00ccff', rot: 0 };
+let currentMove = '—';
+let p1Score = 0, p2Score = 0;
+let spinAngle = 0, spinSpeed = 0;
+let shuffleMode = false;
+let recallCount = 0;
+let running = true;
+let frame = 0;
+let time = 0;
+
+// ─── RECALL ─────────────────────────────────────────────────────
+let history = [];
+const MAX_HISTORY = 50;
+
+function saveState() {
+  history.push({
+    p1: { pose: p1.pose, rot: p1.rot, x: p1.x, y: p1.y },
+    p2: { pose: p2.pose, rot: p2.rot, x: p2.x, y: p2.y },
+    p1Score, p2Score, currentMove, spinAngle, shuffleMode, spinSpeed
+  });
+  if (history.length > MAX_HISTORY) history.shift();
 }
 
-// ============================================================
-// 7. RESPO · SYN · QUANT
-// ============================================================
-function computeRespo(synVal, quantVal) {
-    const raw = (synVal + quantVal) / PHI;
-    return Math.min(1, Math.max(0, raw * (1 + state.cycle * 0.005)));
+function recallState() {
+  if (history.length === 0) { log('❌ kein Recall verfügbar', 'warn'); return false; }
+  const last = history.pop();
+  p1.pose = last.p1.pose; p1.rot = last.p1.rot; p1.x = last.p1.x; p1.y = last.p1.y;
+  p2.pose = last.p2.pose; p2.rot = last.p2.rot; p2.x = last.p2.x; p2.y = last.p2.y;
+  p1Score = last.p1Score; p2Score = last.p2Score;
+  currentMove = last.currentMove;
+  spinAngle = last.spinAngle;
+  shuffleMode = last.shuffleMode;
+  spinSpeed = last.spinSpeed;
+  recallCount++;
+  log(`⏪ RECALL #${recallCount} · zurückgesetzt`, 'recall');
+  updateUI();
+  return true;
 }
 
-// ============================================================
-// 8. RENDER — PYRAMIDE · WÜRFEL
-// ============================================================
+// ─── GENERAL MOVE: KRIECHEN → STEHEN ──────────────────────────
+function generalMove() {
+  const steps = ['z', 'q', 'w', 'e', 'a', 'd', 'y', 'x', 'c', '5'];
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i >= steps.length) { clearInterval(interval); log('⬆ GENERAL · KRIECHEN → STEHEN abgeschlossen', 'gen'); return; }
+    p1.pose = steps[i];
+    currentMove = POSES[steps[i]]?.label || steps[i];
+    log(`⬆ Schritt ${i+1}/${steps.length}: ${currentMove}`, 'flow');
+    updateUI();
+    i++;
+  }, 300);
+  log('⬆ GENERAL · KRIECHEN → STEHEN gestartet', 'gen');
+}
+
+// ─── STICKMAN ──────────────────────────────────────────────────
+function drawStickman(ctx, x, y, pose, color, label, scale, alpha, rot) {
+  const p = POSES[pose] || POSES['5'];
+  const s = scale * 1.8;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(rot + p.body * 0.2);
+  ctx.globalAlpha = alpha || 1;
+
+  ctx.shadowColor = color + '55';
+  ctx.shadowBlur = 25;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 4;
+  ctx.shadowBlur = 15;
+  ctx.beginPath();
+  ctx.arc(0, -s * 1.1 + p.head * 0.3 * s, s * 0.2, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.shadowBlur = 10;
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(0, -s * 0.85 + p.body * 0.3 * s);
+  ctx.lineTo(0, s * 0.25 + p.body * 0.3 * s);
+  ctx.stroke();
+
+  ctx.lineWidth = 4.5;
+  ctx.beginPath();
+  ctx.moveTo(0, -s * 0.65 + p.body * 0.3 * s);
+  ctx.lineTo(-s * 0.45 + p.armL * 0.5 * s, -s * 0.15 + p.body * 0.3 * s);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(0, -s * 0.65 + p.body * 0.3 * s);
+  ctx.lineTo(s * 0.45 + p.armR * 0.5 * s, -s * 0.15 + p.body * 0.3 * s);
+  ctx.stroke();
+
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(0, s * 0.25 + p.body * 0.3 * s);
+  ctx.lineTo(-s * 0.3 + p.legL * 0.6 * s, s * 0.7 + p.legL * 0.6 * s);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(0, s * 0.25 + p.body * 0.3 * s);
+  ctx.lineTo(s * 0.3 + p.legR * 0.6 * s, s * 0.7 + p.legR * 0.6 * s);
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 0.6;
+  ctx.fillStyle = color;
+  ctx.font = '9px monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText(label, 0, -s * 1.5);
+
+  ctx.globalAlpha = 0.3;
+  ctx.font = '7px monospace';
+  ctx.textBaseline = 'top';
+  ctx.fillText(p.label || pose, 0, s * 1.0);
+  ctx.restore();
+}
+
+// ─── RENDER ────────────────────────────────────────────────────
 function render() {
-    if (state.paused) {
-        requestAnimationFrame(render);
-        return;
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  const grad = ctx.createRadialGradient(w/2, h/2, 10, w/2, h/2, w/2);
+  grad.addColorStop(0, '#0a0a1a');
+  grad.addColorStop(0.5, '#050510');
+  grad.addColorStop(1, '#000000');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.02)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(0, h * 0.8);
+  ctx.lineTo(w, h * 0.8);
+  ctx.stroke();
+
+  if (shuffleMode) {
+    for (let i = 0; i < 30; i++) {
+      const x = (i / 30) * w;
+      const y = h * 0.8 + Math.sin(i * 0.5 + time / 500) * 6;
+      ctx.fillStyle = `rgba(255,170,0,${0.02 + Math.sin(i * 0.3 + time / 700) * 0.015})`;
+      ctx.beginPath();
+      ctx.arc(x, y, 2 + Math.sin(time / 400 + i) * 1, 0, Math.PI * 2);
+      ctx.fill();
     }
+  }
 
-    ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#ffaa0044';
+  ctx.font = '14px monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText(`🎯 MOVE: ${currentMove}`, w/2, h * 0.82);
 
-    // Hintergrund
-    const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, W * 0.6);
-    grad.addColorStop(0, '#0a0a1a');
-    grad.addColorStop(1, '#000');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#ff444466';
+  ctx.textAlign = 'left';
+  ctx.fillText(`🔴 ${p1Score}`, 12, 10);
+  ctx.fillStyle = '#00ccff66';
+  ctx.textAlign = 'right';
+  ctx.fillText(`🔵 ${p2Score}`, w - 12, 10);
 
-    // Gitter (3-9-27)
-    drawGrid();
+  ctx.fillStyle = '#445555';
+  ctx.textAlign = 'center';
+  ctx.fillText(`🔄 ${Math.round(spinAngle)}° · RECALL ${recallCount}`, w/2, 4);
 
-    // Orbits (2268, 756, 243)
-    drawOrbits();
+  const scale = Math.min(w, h) * 0.075;
+  const p1x = w * p1.x, p1y = h * 0.7;
+  const p2x = w * p2.x, p2y = h * 0.7;
 
-    // PYRAMIDE + WÜRFEL
-    const rot = { x: state.rotX, y: state.rotY, z: state.rotZ };
-    const points = generatePyramid(state.level, rot);
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.beginPath();
+  ctx.ellipse(p1x, h * 0.82, scale * 0.45, scale * 0.12, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(p2x, h * 0.82, scale * 0.45, scale * 0.12, 0, 0, Math.PI * 2);
+  ctx.fill();
 
-    // Zeichne Basis (Pyramide) — rot
-    for (const p of points) {
-        if (p.type === 'base') {
-            const p1 = project(p.x1, p.y1, p.z1, scale * 0.6);
-            const p2 = project(p.x2, p.y2, p.z2, scale * 0.6);
-            ctx.strokeStyle = `rgba(255, 107, 107, ${0.4 + state.synValue * 0.4})`;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.stroke();
-        }
-    }
+  drawStickman(ctx, p1x, p1y, p1.pose, p1.color, 'P1', scale, 1, p1.rot + spinAngle * 0.02);
+  drawStickman(ctx, p2x, p2y, p2.pose, p2.color, 'P2', scale, 1, p2.rot + spinAngle * 0.02);
 
-    // Zeichne Kanten zur Spitze (Pyramide) — gelb
-    for (const p of points) {
-        if (p.type === 'edge') {
-            const p1 = project(p.x1, p.y1, p.z1, scale * 0.6);
-            const p2 = project(p.x2, p.y2, p.z2, scale * 0.6);
-            ctx.strokeStyle = `rgba(255, 217, 61, ${0.3 + state.respoValue * 0.5})`;
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([4, 6]);
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.stroke();
-            ctx.setLineDash([]);
-        }
-    }
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 0.5;
+  ctx.setLineDash([4, 8]);
+  ctx.beginPath();
+  ctx.moveTo(p1x, p1y - scale * 1.2);
+  ctx.lineTo(p2x, p2y - scale * 1.2);
+  ctx.stroke();
+  ctx.setLineDash([]);
 
-    // Zeichne Würfel-Kanten — blau
-    for (const p of points) {
-        if (p.type === 'cube') {
-            const p1 = project(p.x1, p.y1, p.z1, scale * 0.6);
-            const p2 = project(p.x2, p.y2, p.z2, scale * 0.6);
-            ctx.strokeStyle = `rgba(107, 107, 255, ${0.2 + state.quantValue * 0.5})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.stroke();
-
-            // Ecken markieren
-            ctx.fillStyle = `rgba(107, 107, 255, ${0.3 + state.quantValue * 0.3})`;
-            ctx.beginPath();
-            ctx.arc(p1.x, p1.y, 3, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-
-    // RESPO-Kern (Mitte)
-    drawRespoCore();
-
-    // Metriken aktualisieren
-    document.getElementById('syn-value').textContent = state.synValue.toFixed(3);
-    document.getElementById('quant-value').textContent = state.quantValue.toFixed(3);
-    document.getElementById('respo-value').textContent = state.respoValue.toFixed(3);
-
-    // Rotation
-    if (state.running) {
-        state.rotX += 0.003;
-        state.rotY += 0.005;
-        state.rotZ += 0.001;
-        state.t += 0.01;
-        // Orbits
-        state.orbits.tokio += 0.002;
-        state.orbits.corlu += 0.003;
-        state.orbits.hh += 0.005;
-    }
-
-    requestAnimationFrame(render);
-}
-render();
-
-// ============================================================
-// 9. ZEICHEN-FUNKTIONEN
-// ============================================================
-function drawGrid() {
-    const sizes = [3, 9, 27];
-    const colors = ['#0ff3', '#f0f3', '#ff03'];
-    const r = Math.min(W, H) * 0.3;
-    sizes.forEach((size, idx) => {
-        const spacing = r * 0.06 * (27 / size);
-        const offset = (size - 1) * spacing / 2;
-        ctx.strokeStyle = colors[idx];
-        ctx.lineWidth = 0.5;
-        for (let i = 0; i < size; i++) {
-            const pos = -offset + i * spacing;
-            ctx.beginPath();
-            ctx.moveTo(cx + pos, cy - offset);
-            ctx.lineTo(cx + pos, cy + offset);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(cx - offset, cy + pos);
-            ctx.lineTo(cx + offset, cy + pos);
-            ctx.stroke();
-        }
-    });
-}
-
-function drawOrbits() {
-    // Tokio (2268) — groß, rot
-    const t = state.orbits.tokio;
-    const r1 = Math.min(W, H) * 0.32;
-    ctx.strokeStyle = `rgba(255, 107, 107, ${0.1 + state.synValue * 0.2})`;
-    ctx.lineWidth = 0.5;
-    ctx.setLineDash([2, 8]);
-    ctx.beginPath();
-    ctx.arc(cx + Math.cos(t) * r1 * 0.1, cy + Math.sin(t) * r1 * 0.1, r1 * 0.9, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = `rgba(255, 107, 107, ${0.3 + state.synValue * 0.3})`;
-    ctx.font = '8px Consolas';
+  if (shuffleMode) {
+    ctx.fillStyle = '#ffaa0044';
+    ctx.font = '10px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('2268', cx + Math.cos(t) * r1 * 0.9, cy + Math.sin(t) * r1 * 0.9);
-
-    // Corlu (756) — grün
-    const r2 = Math.min(W, H) * 0.22;
-    ctx.strokeStyle = `rgba(107, 255, 107, ${0.1 + state.quantValue * 0.2})`;
-    ctx.lineWidth = 0.5;
-    ctx.setLineDash([2, 8]);
-    ctx.beginPath();
-    ctx.arc(cx + Math.cos(t * 1.3) * r2 * 0.1, cy + Math.sin(t * 1.3) * r2 * 0.1, r2, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = `rgba(107, 255, 107, ${0.3 + state.quantValue * 0.3})`;
-    ctx.fillText('756', cx + Math.cos(t * 1.3) * r2, cy + Math.sin(t * 1.3) * r2);
-
-    // HH (243) — blau
-    const r3 = Math.min(W, H) * 0.12;
-    ctx.strokeStyle = `rgba(107, 107, 255, ${0.1 + state.respoValue * 0.2})`;
-    ctx.lineWidth = 0.5;
-    ctx.setLineDash([2, 8]);
-    ctx.beginPath();
-    ctx.arc(cx + Math.cos(t * 1.7) * r3 * 0.1, cy + Math.sin(t * 1.7) * r3 * 0.1, r3, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = `rgba(107, 107, 255, ${0.3 + state.respoValue * 0.3})`;
-    ctx.fillText('243', cx + Math.cos(t * 1.7) * r3, cy + Math.sin(t * 1.7) * r3);
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('🔀 SHUFFLE', w/2, h * 0.78);
+  }
 }
 
-function drawRespoCore() {
-    const val = state.respoValue;
-    const coreRadius = 8 + val * 25;
-
-    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreRadius + 25);
-    glow.addColorStop(0, `rgba(255, 217, 61, ${0.3 + val * 0.5})`);
-    glow.addColorStop(0.5, `rgba(255, 217, 61, ${0.1 + val * 0.2})`);
-    glow.addColorStop(1, 'rgba(255, 217, 61, 0)');
-    ctx.fillStyle = glow;
-    ctx.beginPath();
-    ctx.arc(cx, cy, coreRadius + 25, 0, Math.PI * 2);
-    ctx.fill();
-
-    const coreGrad = ctx.createRadialGradient(cx - 3, cy - 3, 0, cx, cy, coreRadius);
-    coreGrad.addColorStop(0, `rgba(255, 217, 61, ${0.9 + val * 0.1})`);
-    coreGrad.addColorStop(0.7, `rgba(255, 200, 50, ${0.6 + val * 0.3})`);
-    coreGrad.addColorStop(1, `rgba(255, 180, 30, ${0.3 + val * 0.2})`);
-    ctx.fillStyle = coreGrad;
-    ctx.shadowColor = '#ffd700';
-    ctx.shadowBlur = 20 + val * 30;
-    ctx.beginPath();
-    ctx.arc(cx, cy, coreRadius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    ctx.fillStyle = '#000';
-    ctx.font = `bold ${10 + val * 10}px Consolas`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('◈', cx, cy - 1);
-
-    ctx.fillStyle = `rgba(255, 255, 255, ${0.3 + val * 0.5})`;
-    ctx.font = '8px Consolas';
-    ctx.fillText(`φ = ${state.respoValue.toFixed(3)}`, cx, cy + coreRadius + 14);
+// ─── UPDATE ────────────────────────────────────────────────────
+function updateUI() {
+  document.getElementById('p1Status').textContent = p1.pose;
+  document.getElementById('p2Status').textContent = p2.pose;
+  document.getElementById('moveStatus').textContent = currentMove;
+  document.getElementById('spinStatus').textContent = `${Math.round(spinAngle)}°`;
+  document.getElementById('shuffleStatus').textContent = shuffleMode ? 'AN' : 'AUS';
+  document.getElementById('shuffleStatus').className = 'value ' + (shuffleMode ? 'on' : 'off');
+  document.getElementById('recallStatus').textContent = recallCount;
 }
 
-// ============================================================
-// 10. CONTROLS
-// ============================================================
-document.getElementById('btn-start').addEventListener('click', function() {
-    state.running = !state.running;
-    this.textContent = state.running ? '⏸ STOP' : '▶ START';
-    document.getElementById('state-display').textContent = state.running ? '● läuft' : '● gestoppt';
-    document.getElementById('state-display').style.color = state.running ? 'var(--gold)' : '#666';
-    log(state.running ? '▶ Pyramide gestartet' : '⏸ Pyramide gestoppt', state.running ? 'ok' : 'warn');
-});
-
-document.getElementById('btn-syn').addEventListener('click', function() {
-    state.synValue = Math.min(1, state.synValue + 0.1);
-    state.respoValue = computeRespo(state.synValue, state.quantValue);
-    log(`⟳ SYN auf ${state.synValue.toFixed(2)} verstärkt`, 'syn');
-});
-
-document.getElementById('btn-quant').addEventListener('click', function() {
-    state.quantValue = Math.min(1, state.quantValue + 0.1);
-    state.respoValue = computeRespo(state.synValue, state.quantValue);
-    log(`⚛ QUANT auf ${state.quantValue.toFixed(2)} verstärkt`, 'quant');
-});
-
-document.getElementById('btn-respo').addEventListener('click', function() {
-    state.respoValue = computeRespo(state.synValue, state.quantValue);
-    log(`◈ RESPO neu berechnet: ${state.respoValue.toFixed(3)}`, 'respo');
-});
-
-document.getElementById('btn-reset').addEventListener('click', function() {
-    state.running = false;
-    state.paused = false;
-    state.cycle = 0;
-    state.t = 0;
-    state.synValue = 0.5;
-    state.quantValue = 0.5;
-    state.respoValue = 0.5;
-    state.rotX = 0;
-    state.rotY = 0;
-    state.rotZ = 0;
-    state.orbits = { tokio: 0, corlu: 0, hh: 0 };
-    document.getElementById('btn-start').textContent = '▶ START';
-    document.getElementById('state-display').textContent = '● reset';
-    document.getElementById('state-display').style.color = '#f44';
-    document.getElementById('cycle-display').textContent = 'Zyklus 0';
-    document.getElementById('syn-value').textContent = '0.500';
-    document.getElementById('quant-value').textContent = '0.500';
-    document.getElementById('respo-value').textContent = '0.500';
-    log('⟲ RESET — Pyramide zurückgesetzt', 'warn');
-});
-
-document.getElementById('btn-auto').addEventListener('click', function() {
-    state.autoMode = !state.autoMode;
-    this.textContent = state.autoMode ? '⏸ PAUSE' : '▶ AUTO';
-    if (state.autoMode) {
-        log('▶ AUTO-Modus — Pyramide atmet', 'warn');
-        state.running = true;
-        document.getElementById('btn-start').textContent = '⏸ STOP';
-        document.getElementById('state-display').textContent = '● auto';
-        document.getElementById('state-display').style.color = 'var(--gold)';
-        if (window.autoInterval) clearInterval(window.autoInterval);
-        window.autoInterval = setInterval(function() {
-            state.cycle++;
-            document.getElementById('cycle-display').textContent = 'Zyklus ' + state.cycle;
-            state.synValue = 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(state.cycle * 0.3));
-            state.quantValue = 0.3 + 0.6 * (0.5 + 0.5 * Math.cos(state.cycle * 0.25));
-            state.respoValue = computeRespo(state.synValue, state.quantValue);
-            state.level = 1 + (state.cycle % 3); // 3^1, 3^2, 3^3
-            log(`🔄 Zyklus ${state.cycle}: Level=${state.level} SYN=${state.synValue.toFixed(2)} QUANT=${state.quantValue.toFixed(2)} RESPO=${state.respoValue.toFixed(2)}`, 'warn');
-        }, 3000);
-    } else {
-        clearInterval(window.autoInterval);
-        log('⏸ AUTO-Modus pausiert', 'warn');
-        document.getElementById('state-display').textContent = '● pausiert';
-        document.getElementById('state-display').style.color = '#ff4';
-    }
-});
-
-// ============================================================
-// 11. TASTATUR
-// ============================================================
-document.addEventListener('keydown', function(e) {
-    if (e.key === ' ') { e.preventDefault(); document.getElementById('btn-start').click(); }
-    if (e.key === 's' || e.key === 'S') document.getElementById('btn-syn').click();
-    if (e.key === 'q' || e.key === 'Q') document.getElementById('btn-quant').click();
-    if (e.key === 'r' || e.key === 'R') document.getElementById('btn-respo').click();
-    if (e.key === 'x' || e.key === 'X') document.getElementById('btn-reset').click();
-    if (e.key === 'a' || e.key === 'A') document.getElementById('btn-auto').click();
-});
-
-// ============================================================
-// 12. UHR
-// ============================================================
-function updateClock() {
-    document.getElementById('clock').textContent = '⏱️ ' + new Date().toLocaleTimeString();
+function log(msg, type = 'hl') {
+  const el = document.getElementById('log');
+  const time = new Date().toLocaleTimeString();
+  const cls = ['hl','ok','flow','whirl','gen','recall','warn'].includes(type) ? type : 'hl';
+  el.innerHTML += `<div>[${time}] <span class="${cls}">${msg}</span></div>`;
+  el.scrollTop = el.scrollHeight;
+  if (el.children.length > 30) el.removeChild(el.firstChild);
 }
-setInterval(updateClock, 1000);
-updateClock();
 
-// ============================================================
-// 13. INIT
-// ============================================================
-log('🔺 PYRAMIDE · WÜRFELBILDUNG — CONTINIUM', 'respo');
-log('🌀 2268 = Tokio-Orbit (Ursache)', 'tokio');
-log('🌀 756 = Corlu-Orbit (Wirkung)', 'corlu');
-log('🌀 243 = HH-Orbit (Verschränkung)', 'quant');
-log('◈ RESPO = (SYN + QUANT) / φ', 'respo');
-log('⌨️  space=Start  s=SYN  q=QUANT  r=RESPO  x=Reset  a=Auto', 'ok');
+function update() {
+  if (!running) return;
+  time += 16;
+  frame++;
 
-console.log('🔺 PYRAMIDE · WÜRFELBILDUNG — CONTINIUM');
-console.log('🌀 2268 = Tokio-Orbit');
-console.log('🌀 756 = Corlu-Orbit');
-console.log('🌀 243 = HH-Orbit');
-console.log('⌨️  space=Start  s=SYN  q=QUANT  r=RESPO  x=Reset  a=Auto');
+  if (frame % 30 === 0) saveState();
 
-// Automatisch starten
-setTimeout(function() {
-    state.running = true;
-    document.getElementById('btn-start').textContent = '⏸ STOP';
-    document.getElementById('state-display').textContent = '● läuft';
-    document.getElementById('state-display').style.color = 'var(--gold)';
-    log('▶ Pyramide automatisch gestartet', 'ok');
-}, 500);
+  if (frame % 120 === 0) {
+    const keys = Object.keys(POSES);
+    currentMove = POSES[keys[Math.floor(Math.random() * keys.length)]]?.label || '—';
+    updateUI();
+  }
+
+  if (frame % 8 === 0) {
+    const keys1 = shuffleMode ? ['5','6','7','8','9','1','2','3','4'] : ['1','2','3','4','5','6','7','8','9'];
+    p1.pose = keys1[Math.floor(Math.random() * keys1.length)];
+    if (p1.pose === currentMove || Math.random() < 0.1) p1Score++;
+    if (shuffleMode) p1.rot += (Math.random() - 0.5) * 0.05;
+
+    const keys2 = shuffleMode ? ['y','x','c','q','w','e','a','z','d'] : ['q','w','e','a','z','d','y','x','c'];
+    p2.pose = keys2[Math.floor(Math.random() * keys2.length)];
+    if (p2.pose === currentMove || Math.random() < 0.1) p2Score++;
+    if (shuffleMode) p2.rot += (Math.random() - 0.5) * 0.05;
+    updateUI();
+  }
+
+  if (spinSpeed !== 0) {
+    spinAngle += spinSpeed * 8;
+    document.getElementById('spinStatus').textContent = `${Math.round(spinAngle)}°`;
+  }
+
+  render();
+  requestAnimationFrame(update);
+}
+
+// ─── TASTATUR ──────────────────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  const key = e.key.toLowerCase();
+  if (key >= '1' && key <= '9') { e.preventDefault(); p1.pose = key; updateUI(); }
+  if (['q','w','e','a','z','d','y','x','c'].includes(key)) { e.preventDefault(); p2.pose = key; updateUI(); }
+  if (key === 'g') { e.preventDefault(); generalMove(); }
+  if (key === 'r') { e.preventDefault(); recallState(); }
+  if (key === ' ') { e.preventDefault(); running = !running; document.getElementById('btnShuffle').textContent = running ? '▶ RUN' : '⏸ PAUSE'; }
+});
+
+// ─── BUTTONS ──────────────────────────────────────────────────
+document.getElementById('btnGeneral').addEventListener('click', generalMove);
+document.getElementById('btnShuffle').addEventListener('click', () => {
+  shuffleMode = !shuffleMode;
+  document.getElementById('btnShuffle').classList.toggle('active');
+  log(shuffleMode ? '🔀 SHUFFLE AN' : '🔀 SHUFFLE AUS', 'flow');
+  updateUI();
+});
+document.getElementById('btnSpin').addEventListener('click', () => {
+  spinSpeed = spinSpeed === 0 ? 0.02 : spinSpeed === 0.02 ? 0.05 : 0;
+  document.getElementById('btnSpin').classList.toggle('active');
+  log(spinSpeed ? `🔄 DREH ${Math.round(spinSpeed*100)}%` : '🔄 DREH AUS', 'whirl');
+});
+document.getElementById('btnRecall').addEventListener('click', recallState);
+document.getElementById('btnReset').addEventListener('click', () => {
+  p1.pose = 'z'; p2.pose = 'c'; p1Score = 0; p2Score = 0;
+  currentMove = '—'; spinAngle = 0; shuffleMode = false; spinSpeed = 0;
+  recallCount = 0; history = [];
+  document.getElementById('btnShuffle').classList.remove('active');
+  document.getElementById('btnSpin').classList.remove('active');
+  log('⟲ RESET', 'warn');
+  updateUI();
+});
+
+document.querySelectorAll('.move-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const pose = btn.dataset.pose;
+    p1.pose = pose;
+    currentMove = POSES[pose]?.label || pose;
+    log(`🎯 POSE: ${currentMove}`, 'flow');
+    updateUI();
+  });
+});
+
+// ─── INIT ──────────────────────────────────────────────────────
+saveState();
+update();
+log('🌀 TANZ · SHOW.live · GENERAL · bereit', 'ok');
+log('⌨️  1-9 P1 · qweazdyxc P2 · g=GENERAL · r=RECALL · space=PAUSE', 'hl');
+log('⬆ GENERAL: KRIECHEN → STEHEN (9 Schritte)', 'gen');
 </script>
+
 </body>
 </html>
